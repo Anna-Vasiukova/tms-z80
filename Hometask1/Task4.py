@@ -1,6 +1,9 @@
+from math import cos
+k=8
+print(cos(k))
+
 x = int(input())
 n = int(input())
-
 
 def fact(y):
     z = 1
@@ -13,8 +16,8 @@ b = 0
 
 for p in range(1, n+1):
     b += (-1)**p*x**(p*2)/fact(2*p)
-cos = 1+b
-print(cos)
+d = 1+b
+print(d)
 
 
 
