@@ -14,9 +14,10 @@ while True:
         break
 
     month -= 1
-    if not month:
-        month = 12
+    if month == 0:
         year -= 1
+        month = 12
+
 
 
 
