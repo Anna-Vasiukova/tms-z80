@@ -6,6 +6,9 @@ c = float(input("c = "))
 from math import cos, pi, acos
 
 if a + b > c and a + c > b and b + c > a:
+    #  лучше было сделать функцию:
+    #  def angle(a, b, c): ...
+    #  вместо того, чтобы три раза дублировать вычисление acos
     print("Треугольник существует")
     alfa = acos((b**2+c**2-a**2)/(2*b*c))
     print((alfa)*180//pi)
