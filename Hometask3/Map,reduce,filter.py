@@ -1,4 +1,3 @@
-from typing import List
 from random import randint
 from functools import reduce
 
