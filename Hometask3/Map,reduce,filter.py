@@ -1,3 +1,4 @@
+from typing import List
 from random import randint
 from functools import reduce
 
@@ -6,45 +7,47 @@ array = [randint(1, 9) for i in range(n)]
 print(array)
 
 
-amount = (lambda a1, b1: a1+b1, lambda: 0)
-# print(amount)
+#  REDUCER
 
 
-multiply_all = reduce(lambda a1, b1: a1*b1, array)
-print(multiply_all)
+def amount(a1, b1):
+    return a1 + b1
 
 
-joins = reduce(lambda a1,b1: a1*10+b1, array)
-print(joins)
+def multiply(a1, b1):
+    return a1 * b1
 
 
-def unique(lst):
-    y = set(lst)
-    return y
+def joins(a1, b1):
+    return str(a1) + str(b1)
 
 
-print(unique(array))
+def unique(f: set, y):
+    f.add(y)
+    return f
 
 
-def revers(lst):
-    return list(reversed(lst))
+def revers(seq: list, y):
+    seq.insert(0, y)
+    return seq
 
 
-print(revers(array))
+# MAPPER
 
 
 def negate(lst):
     return -lst
 
 
-# negated = list(map(negate, array))
-# print(negated)
+def invert(lst):
+    return 1 / lst
 
-inv = list(map(lambda a1: 1 / a1, array))
-print(inv)
 
-sq = list(map(lambda a1: a1**2, array))
-print(sq)
+def squared(lst):
+    return lst ** 2
+
+
+# FILTER
 
 
 def odds(lst):
@@ -52,46 +55,44 @@ def odds(lst):
 
 
 def evens(lst):
-    return (lst+1) % 2
+    return (lst + 1) % 2
 
 
 def primes(lst):
-    for i in (2, 3, 5, 7):
+    simple = [2, 3, 5, 7]
+    if lst in simple:
         return lst
-print(primes(array))
 
 
-Od = list(filter(odds, array))
-print(Od)
-
-Ev = list(filter(evens, array))
-print(Ev)
-
-reducers = {'sum': amount,
-            'multiply': multiply_all,
-            'join': joins,
-            'unite': unique(array),
-            'reverse': revers(array)}
+reducers = {'sum': (amount, 0),
+            'multiply': (multiply, 1),
+            'join': (joins, 0),
+            'unite': (unique, set),
+            'reverse': (revers, list)
+            }
 mappers = {
     'negated': negate,
-    'inverted': inv,
-    'squared': sq}
-generators = {'evens': Ev,
-              'odds': Od }
+    'inverted': invert,
+    'squared': squared
+        }
+generators = {'evens': evens,
+              'odds': odds,
+              'primes': primes
+              }
 
-reducers_name, mappers_name, generators_name = input().split()
-reducer = reducers[reducers_name]
-mapper = mappers[mappers_name]
-generator = generators[generators_name]
+reducers_request, mappers_request, generators_request = input().split()
+reducer, initial = reducers[reducers_request]
+mapper = mappers[mappers_request]
+generator = generators[generators_request]
 
-# result = reduce(reduce, map(mapper, generator))
+c = reduce(reducer, array, initial())
+d = list(map(mapper, array))
+z = list(filter(generator, array))
+print(c)
+print(d)
+print(z)
 
-# print(result)
-
-# print(reducer)
-# # print(mapper(array))
-# print(generator)
-# d = list(map(mapper, generator))
-# print(f'D: {d}')
-# c = (unique, d)
-# print(c)
+q = list(map(mapper, list(filter(generator, array))))
+w = reduce(reducer, list(map(mapper, list(filter(generator, array)))), initial())
+print(q)
+print(w)
