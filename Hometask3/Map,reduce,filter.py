@@ -63,9 +63,9 @@ def primes(lst):
         return lst
 
 
-reducers = {'sum': (amount, 0),
-            'multiply': (multiply, 1),
-            'join': (joins, 0),
+reducers = {'sum': (amount, lambda: 0),
+            'multiply': (multiply, lambda: 1),
+            'join': (joins,lambda: 0),
             'unite': (unique, set),
             'reverse': (revers, list)
             }
