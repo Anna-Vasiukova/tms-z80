@@ -1,5 +1,6 @@
 from random import randint
 from functools import reduce
+from math import log10
 
 n = int(input())
 array = [randint(1, 9) for i in range(n)]
@@ -18,7 +19,8 @@ def multiply(a1, b1):
 
 
 def joins(a1, b1):
-    return str(a1) + str(b1)
+    digits = int(log10(abs(b1))+1)
+    return a1*10**digits+b1
 
 
 def unique(f: set, y):
@@ -58,14 +60,12 @@ def evens(lst):
 
 
 def primes(lst):
-    simple = [2, 3, 5, 7]
-    if lst in simple:
-        return lst
+    return lst in {1, 2, 3, 5, 7}
 
 
 reducers = {'sum': (amount, lambda: 0),
             'multiply': (multiply, lambda: 1),
-            'join': (joins,lambda: 0),
+            'join': (joins, lambda: 0),
             'unite': (unique, set),
             'reverse': (revers, list)
             }
@@ -84,14 +84,8 @@ reducer, initial = reducers[reducers_request]
 mapper = mappers[mappers_request]
 generator = generators[generators_request]
 
-c = reduce(reducer, array, initial())
-d = list(map(mapper, array))
-z = list(filter(generator, array))
-print(c)
-print(d)
-print(z)
 
-q = list(map(mapper, list(filter(generator, array))))
-w = reduce(reducer, list(map(mapper, list(filter(generator, array)))), initial())
-print(q)
-print(w)
+sp1 = list(map(mapper, filter(generator, array)))
+result = reduce(reducer, list(map(mapper, filter(generator, array))), initial())
+print(sp1)
+print(result)
