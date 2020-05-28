@@ -1,7 +1,11 @@
+from itertools import chain
+
+
 def log(func):
     def wrapper(*args, **kwargs):
         print(func.__name__, end='')
-        print(f'{*args, *kwargs.items()}', end='')
+        arg_str = ', '.join(chain(map(str, args), map(lambda x: f'{x[0]}={x[1]}', kwargs.items())))
+        print(f'({arg_str})', end='')
         result = func(*args, **kwargs)
         print(f' -> {result}')
         return result
