@@ -3,10 +3,10 @@ class Readonly(object):
         self.func = func
 
     def __get__(self, instance, owner):
-        return self.func(instance)
+        return instance.__dict__['_Test__val']
 
     def __set__(self, instance, value):
-        return self.func(value)
+        raise AttributeError
 
 
 class Test(object):
