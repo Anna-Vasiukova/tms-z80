@@ -1,10 +1,7 @@
-from time import time, sleep
 from Hometask5.Window import Window
+from random import randint
 
-
-window = Window(100, 100, 800, 600)
-
-
+window = Window(0, 0, 500, 500)
 
 
 class Shape(object):
@@ -14,14 +11,7 @@ class Shape(object):
         self.point = (self.x, self.y)
 
     # def draw(self):
-
-
-
-
-
     # def top(self) -> float:
-    #
-    #
     # def bottom(self) -> float: ...  # нижняя граница
     # def left(self) -> float: ...  # левая граница
     # def right(self) -> float: ...  # правая граница
@@ -36,12 +26,10 @@ class Rectangle(Shape):  # прямоугольник
         window.draw_rectangle(self.point, self.size, color='green')
 
 
-
 class Square(Rectangle):  # квадрат
     def __init__(self, x, y, size):
         Rectangle.__init__(self, x, y, size, size)
         window.draw_rectangle(self.point, self.size, color='black')
-
 
 
 class Circle(Shape):  # круг
@@ -50,7 +38,6 @@ class Circle(Shape):  # круг
         self.radius = radius
         self.size = (2 * self.radius, 2 * self.radius)
         window.draw_ellipse(self.point, self.size, color='red')
-
 
 
 class Triangle(Shape):  # равносторонний треугольник
@@ -66,14 +53,34 @@ class Triangle(Shape):  # равносторонний треугольник
 # for i in range(N):
 #     size = list(map(int, input('Введите размер фигуры: ').split(',')))
 #     print(size)
-p1 = (300, 400, 200, 100)
-p2 = (200, 500, 200, 100)
+
+# center = (0, 0)
+#
+# while not window.closed:
+#     start = time()
+#     window.clear()
+#     point1 = (center[0] + randint(50, 450), center[1] + randint(50, 450))
+#     a = Rectangle(*point1, 80, 50)
+#     point2 = (center[0] + randint(50, 450), center[1] + randint(50, 450))
+#     b = Square(*point2, 50)
+#     point3 = (center[0] + randint(50, 450), center[1] + randint(50, 450))
+#     c = Circle(*point3, 40)
+#     point4 = (center[0] + randint(50, 450), center[1] + randint(50, 450))
+#     d = Triangle(*point4, 70)
+#     window.update()
+#     sleep(0.7)
+
+a = Rectangle(randint(50, 450), randint(50, 450), 80, 50)
+dx = 3
+dy = 2
 
 while not window.closed:
-    for i in [p1, p2]:
-        a = Rectangle(*i)
+    window.clear()
+    x, y = a.point
+    if x+dx >= 420 or x+dx <= 0:
+        dx = -dx
+    if y+dy >= 450 or y+dy <= 0:
+        dy = -dy
+    a = Rectangle(x+dx, y+dy, 80, 50)
 
-    b = Square(200, 500, 100)
-    c = Circle(400, 100, 100)
-    d = Triangle(250, 350, 200)
     window.update()

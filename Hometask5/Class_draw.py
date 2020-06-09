@@ -1,6 +1,8 @@
 from time import time, sleep
 from math import sin, cos, pi
 from Hometask5.Window import Window
+from tkinter import *
+
 
 window = Window(100, 100, 800, 600)  # create window 800x600 at (100, 100)
 fps = 60  # frames per second/updates per second
