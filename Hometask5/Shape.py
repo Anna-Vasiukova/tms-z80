@@ -1,8 +1,10 @@
+from random import randint
 from Hometask5.Window import Window
 from abc import abstractmethod
 from time import *
 
 window = Window(0, 0, 500, 500)
+fps = 120
 
 
 class Shape(object):
@@ -55,6 +57,14 @@ class Rectangle(Shape):
     def right(self):
         return self.left() + self.width
 
+    @classmethod
+    def input(cls):
+        w = int(input('Введите ширину пямоугольника: '))
+        h = int(input('Введите высоту пямоугольника: '))
+        x = randint(0+w/2, window.width-w/2)
+        y = randint(0+h/2, window.height-h/2)
+        return Rectangle(x, y, w, h)
+
 
 class Square(Rectangle):  # квадрат
     def __init__(self, x, y, size):
@@ -77,6 +87,13 @@ class Square(Rectangle):  # квадрат
 
     def right(self):
         return self.left() + self.width
+
+    @classmethod
+    def input(cls):
+        w = int(input('Введите сторну квадрата: '))
+        x = randint(0+w/2, window.width-w/2)
+        y = randint(0+w/2, window.height-w/2)
+        return Square(x, y, w)
 
 
 class Circle(Shape):  # круг
@@ -102,6 +119,13 @@ class Circle(Shape):  # круг
     def right(self):
         return self.x + self.radius
 
+    @classmethod
+    def input(cls):
+        r = int(input('Введите радиус круга: '))
+        x = randint(0+2*r, window.width-2*r)
+        y = randint(0+2*r, window.height-2*r)
+        return Circle(x, y, r)
+
 
 class Triangle(Shape):  # равносторонний треугольник
     def __init__(self, x, y, height):
@@ -117,10 +141,10 @@ class Triangle(Shape):  # равносторонний треугольник
         window.draw_polygon(point1, point2, point3, color='yellow')
 
     def top(self):
-        return self.y
+        return self.y - self.height
 
     def bottom(self):
-        return self.y - self.height
+        return self.y
 
     def left(self):
         return self.x - self.height / 2
@@ -128,67 +152,53 @@ class Triangle(Shape):  # равносторонний треугольник
     def right(self):
         return self.x + self.height / 2
 
+    @classmethod
+    def input(cls):
+        h = int(input('Введите сторону треугольника: '))
+        x = randint(0+h, window.width-h)
+        y = randint(0+h, window.height-h)
+        return Triangle(x, y, h)
 
-rect = Rectangle(300, 400, 80, 50)
-sq = Square(300, 400, 50)
-cir = Circle(300, 400, 50)
-tr = Triangle(300, 400, 100)
+
+N = int(input('Введите количество фигур: '))
+Shapes = [input(f'Введите название фигуры {i+1}: ') for i in range(N)]
+Examples = []
+for shape in Shapes:
+    if shape == 'Прямоугольник':
+        rect = Rectangle.input()
+        Examples.append(rect)
+    elif shape == "Квадрат":
+        sq = Square.input()
+        Examples.append(sq)
+    elif shape == "Круг":
+        cir = Circle.input()
+        Examples.append(cir)
+    elif shape == 'Треугольник':
+        tr = Triangle.input()
+        Examples.append(tr)
 
 while not window.closed:
     start = time()
     window.clear()
-    rect.x += rect.dx
-    rect.y -= rect.dy
-    sq.x += sq.dx
-    sq.y -= sq.dy
-    cir.x += cir.dx
-    cir.y -= cir.dy
-    tr.x += tr.dx
-    tr.y -= tr.dy
 
-    if rect.right() > window.width:
-        rect.dx = -rect.dx
-    elif rect.left() < 0:
-        rect.dx = -rect.dx
+    for example in Examples:
+        example.x += example.dx
+        example.y -= example.dy
 
-    if rect.top() < 0:
-        rect.dy = -rect.dy
-    elif rect.bottom() > window.height:
-        rect.dy = -rect.dy
+        if example.right() > window.width:
+            example.dx = -example.dx
+        elif example.left() < 0:
+            example.dx = -example.dx
 
-    if sq.right() > window.width:
-        sq.dx = -sq.dx
-    elif sq.left() < 0:
-        sq.dx = -sq.dx
+        if example.top() < 0:
+            example.dy = -example.dy
+        elif example.bottom() > window.height:
+            example.dy = -example.dy
 
-    if sq.top() < 0:
-        sq.dy = -sq.dy
-    elif sq.bottom() > window.height:
-        sq.dy = -sq.dy
-
-    if cir.right() > window.width:
-        cir.dx = -cir.dx
-    elif cir.left() < 0:
-        cir.dx = -cir.dx
-
-    if cir.top() < 0:
-        cir.dy = -cir.dy
-    elif cir.bottom() > window.height:
-        cir.dy = -cir.dy
-
-    if tr.right() > window.width:
-        tr.dx = -tr.dx
-    elif tr.left() < 0:
-        tr.dx = - tr.dx
-
-    if tr.top() > window.height:
-        tr.dy = -tr.dy
-    elif tr.bottom() < 0:
-        tr.dy = -tr.dy
-
-    rect.draw()
-    sq.draw()
-    cir.draw()
-    tr.draw()
+        example.draw()
 
     window.update()
+
+    pause = 1 / fps - (time() - start)
+    if pause > 0:
+        sleep(pause)
