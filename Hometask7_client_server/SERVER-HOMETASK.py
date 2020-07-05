@@ -48,7 +48,7 @@ def set_value(values, id, field, value):
     if id:
         obj = values.get(int(id), None)
         if not obj:
-            return None
+            return 'HTTP/1.0 404 Not Found\r\n\r\n'
         if field:
             func = value.__dict__
             setattr(obj, field, func[field])
