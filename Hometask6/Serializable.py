@@ -28,7 +28,7 @@ class Integer(Field):
         return value.to_bytes(4, 'big')
 
     def load(self, dat: bytes):
-        return int.from_bytes(data[0:4], 'big')
+        return int.from_bytes(dat[0:4], 'big'), 4
 
     def convert(self, value):
         if isinstance(value, int):
@@ -51,11 +51,28 @@ class Float(Field):
 
     def dump(self, value):
         from struct import pack
-        return pack('>f', value)
+        return pack('>d', value)
 
     def load(self, dat: bytes):
         from struct import unpack
-        return unpack('>f', data[4:8])[0]
+        return unpack('>d', dat[0:8])[0], 8
+
+
+class String(Field):
+    def convert(self, value):
+        if isinstance(value, str):
+            return value
+        raise ValueError()
+
+    def dump(self, value: str):
+        dat = value.encode('utf-8')
+        n = len(dat)
+        return n.to_bytes(2, 'big', signed=False) + dat
+
+    def load(self, dat: bytes):
+        n = int.from_bytes(dat[0:2], 'big', signed=False)
+        value = dat[2:2+n].decode('utf-8')
+        return value, 2+n
 
 
 class Serializable(object):
@@ -80,7 +97,9 @@ class Serializable(object):
                     desc[key] = value
         obj = {}
         for key, value in desc.items():
-            obj[key] = value.load(dat)
+            val, n = value.load(dat)
+            obj[key] = val
+            dat = dat[n:]
         dic = Test.__new__(Test)
         dic.__dict__.update(obj)
         return dic
@@ -89,18 +108,20 @@ class Serializable(object):
 class Test(Serializable):
     x = Integer()
     _y = Float()
+    z = String()
 
-    def __init__(self, x: int, y: float):
+    def __init__(self, x: int, y: float, z: str):
         self.x: int = x
         self._y: float = y
+        self.z: str = z
 
     def __eq__(self, other):
         if not isinstance(other, Test):
             return False
-        return self.x == other.x and self._y == other._y
+        return self.x == other.x and self._y == other._y and self.z == other.z
 
 
-a = Test(1, 2)
+a = Test(1, 2.5666, 'abc')
 print(a.__dict__)
 data = a.dump()
 print(data)
