@@ -48,19 +48,34 @@ def set_value(values, id, field, value):
     if id:
         obj = values.get(int(id), None)
         if not obj:
-            return 'HTTP/1.0 404 Not Found\r\n\r\n'
+            # функции должны иметь четкое поведение
+            # у тебя же она возвращает, что повезет :)
+            # можно, например, условиться, что она возвращает obj
+            # в случае успеха и None в остальных случаях
+            # return 'HTTP/1.0 404 Not Found\r\n\r\n'
+            return None
         if field:
-            func = value.__dict__
-            setattr(obj, field, func[field])
-            obj = obj.__dict__
-            return obj[field]
+            # func = value.__dict__
+            # setattr(obj, field, func[field])
+            # obj = obj.__dict__
+            # return obj[field]
+            setattr(obj, field, value)
+            return obj
         else:
-            obj.__dict__ = value.__dict__
-            return obj.__dict__
+            # перезаписывать __dict__ у объекта - это плохо, потому что так его можно сломать
+            # вместо этого лучше выполнить слияние словарей
+            # obj.__dict__ = value.__dict__
+            # return obj.__dict__
+            obj.__dict__.update(value)
+            return obj
     else:
-        values[value.id] = value
-        res = [obj.__dict__ for obj in values.values()]
-        return res
+        # здесь мы должны создать нового юзера и добавить его в словарь
+        # values[value.id] = value
+        # res = [obj.__dict__ for obj in values.values()]
+        # return res
+        obj = User(**value)
+        values[obj.id] = obj
+        return obj
 
 
 def handler(request: str) -> str:
@@ -91,12 +106,19 @@ def handler(request: str) -> str:
             return 'HTTP/1.0 400 Not Found\r\n\r\n'
     else:
         if var == 'users':
+            # new_user должен быть получен из тела запроса
+            new_user = json.loads(lines3[1])
             new_result = set_value(users, id, field, new_user)
-            return lines3[1].join(json.dumps(new_result))
+            # значение и так возвращается после if new_result, поэтому эта строка лишняя
+            # return lines3[1].join(json.dumps(new_result))
         else:
+            # new_user должен быть получен из тела запроса
+            new_message = json.loads(lines3[1])
             new_result = set_value(messages, id, field, new_message)
         if new_result:
-            return lines3[1].join(json.dumps(new_result))
+            # возвращать JSON не нужно, это ведь не GET
+            # return lines3[1].join(json.dumps(new_result))
+            return 'HTTP/1.0 200 OK\r\n\r\n'
         else:
             return 'HTTP/1.0 404 Not Found\r\n\r\n'
 
