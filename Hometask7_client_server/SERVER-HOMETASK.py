@@ -3,10 +3,10 @@ from typing import List
 
 
 class User(object):
-    def __init__(self, id: int, name: str, messges: List[int]):
+    def __init__(self, id: int, name: str, messages: List[int]):
         self.id = id
         self.name = name
-        self.messages = messges
+        self.messages = messages
 
 
 class Message(object):
@@ -40,27 +40,26 @@ def get_value(values, id, field):
         return [obj.__dict__ for obj in values.values()]
 
 
-new_user = User(3, 'Ray', [3])
-new_message = Message(3, 3, 'Hello, Ray!')
-
-
 def set_value(values, id, field, value):
     if id:
         obj = values.get(int(id), None)
         if not obj:
-            return 'HTTP/1.0 404 Not Found\r\n\r\n'
+            return None
         if field:
-            func = value.__dict__
-            setattr(obj, field, func[field])
-            obj = obj.__dict__
-            return obj[field]
+            setattr(obj, field, value)
+            return obj
         else:
-            obj.__dict__ = value.__dict__
-            return obj.__dict__
+            obj.__dict__.update(value)
+            return obj
     else:
-        values[value.id] = value
-        res = [obj.__dict__ for obj in values.values()]
-        return res
+        if values == 'users':
+            obj = User(**value)
+            values[obj.id] = obj
+            return obj
+        else:
+            obj = Message(**value)
+            values[obj.id] = obj
+            return obj
 
 
 def handler(request: str) -> str:
@@ -68,7 +67,7 @@ def handler(request: str) -> str:
     import re
     lines = request.split('\r\n', 1)
     lines2 = lines[1]
-    lines3 = lines2.split('\r\n\r\n')
+    lines3 = lines2.split('\r\n')
     match = re.fullmatch(r'([A-Z]+) (/\S*) HTTP/(\d\.\d)', lines[0])
     if not match:
         return 'HTTP/1.0 400 Bad Request\r\n\r\n'
@@ -91,14 +90,15 @@ def handler(request: str) -> str:
             return 'HTTP/1.0 400 Not Found\r\n\r\n'
     else:
         if var == 'users':
+            new_user = json.loads(lines3[1])
             new_result = set_value(users, id, field, new_user)
-            return lines3[1].join(json.dumps(new_result))
         else:
+            new_message = json.loads(lines3[1])
             new_result = set_value(messages, id, field, new_message)
         if new_result:
-            return lines3[1].join(json.dumps(new_result))
+            return 'HTTP/1.0 200 OK\r\n\r\n'
         else:
             return 'HTTP/1.0 404 Not Found\r\n\r\n'
 
 
-server_module.serve(handler, '127.0.0.1', 80)
+server_module.serve(handler, '127.0.0.1', 8000)
